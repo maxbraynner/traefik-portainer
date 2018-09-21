@@ -25,15 +25,19 @@ services:
     ports:
       - "9000:9000"
     volumes:
-      - portainer_data:/data
+      - "portainer_data:/data"
     networks:
       - agent_network
       - traefik_public
     deploy:
       labels:
-        - traefik.docker.network=traefik_public
-        - traefik.frontend.rule=PathPrefixStrip:/portainer
-        - traefik.port=9000
+        - "traefik.backend=portainer"
+        - "traefik.frontend.rule=PathPrefixStrip:/portainer"
+        - "traefik.port=9000"
+        - "traefik.enable=true"
+        - "traefik.docker.network=traefik_public"
+        - "traefik.weight=10"
+        - "traefik.frontend.passHostHeader=true"
       mode: replicated
       replicas: 1
       placement:

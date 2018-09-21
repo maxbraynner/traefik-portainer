@@ -38,7 +38,7 @@ done
 echo; echo ; sleep 2
 
 # Check traefik logs
-echo "docker service logs -f proxy_traefik ..."
-docker service logs -f proxy_traefik
+# echo "docker service logs -f proxy_traefik ..."
+# docker service logs -f proxy_traefik
 
 echo; echo ; sleep 2;

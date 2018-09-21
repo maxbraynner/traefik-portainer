@@ -1,50 +1,49 @@
-version: "3.2"
-
-# pre-Requirement
-# Don't forget to set acme.json on the node
-
-# Log options: "DEBUG", "INFO", "WARN", "ERROR", "FATAL", "PANIC"
-  # https://github.com/containous/traefik/commit/af9b63eaed828f1d548f404fc8b486dd592184e9
+version: '3.3'
 
 services:
 
   traefik:
-    image: traefik:1.6.6
-    command:
-      - --docker
-      - --docker.swarmmode=true
-      - --docker.domain=docker.localhost
-      - --docker.watch=true
-      - --docker.exposedbydefault=true
-      - --docker.endpoint=unix:///var/run/docker.sock
-      - --debug=true
-      - --logLevel=WARN
-      - --web
-    ports:
-      - "80:80"
-      - "443:443"
-      - "8080:8080"
+    image: traefik:1.6-alpine
     networks:
       - traefik_public
     volumes:
+      - acme:/etc/traefik/acme
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./traefik-config/acme.json:/etc/traefik/acme/acme.json
-      - ./traefik-config:/etc/traefik/traefik.toml
-    labels:
-      - "traefik.enable=false"
-    deploy:
-      replicas: 1
-      placement:
-        constraints: [node.role==manager]
-      restart_policy:
-        condition: on-failure
-      resources:
-        limits:
-          cpus: '0.50'
-          memory: 128M
-        reservations:
-          cpus: '0.10'
-          memory: 64M
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080" # traefik dashboard
+    command:
+      # Use your favourite settings here, but add:
+      - --docker
+      - --docker.swarmMode
+      - --docker.domain=traefik
+      - --docker.watch
+      - --api
+      - --defaultentrypoints=http,https
+      - --acme
+      - --acme.email=bret@bretfisher.com
+        # TODO: envvar for email and default domain
+      - --acme.httpchallenge
+      - --acme.httpchallenge.entrypoint=http
+      - --acme.onhostrule=true
+      - --acme.entrypoint=https
+      - --entryPoints=Name:https Address::443 TLS
+      - --entryPoints=Name:http Address::80
+      - --acme.storage=/etc/traefik/acme/acme.json
+      - --acme.acmelogging
+      - --acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory
+      # - --acme.caserver=https://acme-v02.api.letsencrypt.org/directory
+    logging:
+      options:
+        max-size: "500k"
+
+
+volumes:
+  acme:
+    # driver: rexray/dobs
+    # driver_opts:
+    #   size: 1
 
 networks:
   traefik_public:

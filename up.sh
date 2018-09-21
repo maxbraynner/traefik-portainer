@@ -16,10 +16,12 @@ docker network ls | grep "traefik_"
 echo; echo "Start the stacks ..."; echo; echo 
 
 # traefik
+echo "Deploy traefik..."
 docker stack deploy proxy -c proxy.yml
 echo; echo ; sleep 2
 
 # portainer
+echo "Deploy portainer..."
 docker stack deploy portainer -c portainer.yml
 echo; echo ; sleep 2
 
@@ -27,7 +29,7 @@ echo; echo "docker stack ls ..."
 docker stack ls;
 echo; echo ; sleep 2
 
-# Check services deployment in real time
+Check services deployment in real time
 MIN=1
 MAX=3
 for ACTION in $(seq $MIN $MAX); do
@@ -41,4 +43,4 @@ echo; echo ; sleep 2
 # echo "docker service logs -f proxy_traefik ..."
 # docker service logs -f proxy_traefik
 
-echo; echo ; sleep 2;
+# echo; echo ; sleep 2;

@@ -22,7 +22,7 @@ services:
       - --api
       - --defaultentrypoints=http,https
       - --acme
-      - --acme.email=bret@bretfisher.com
+      - --acme.email=max@domain.com
         # TODO: envvar for email and default domain
       - --acme.httpchallenge
       - --acme.httpchallenge.entrypoint=http
@@ -41,9 +41,6 @@ services:
 
 volumes:
   acme:
-    # driver: rexray/dobs
-    # driver_opts:
-    #   size: 1
 
 networks:
   traefik_public:
